@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=klotz
 Type=simple
-ExecStart=/home/klotz/dotfiles/random/energy-monitor.sh >> /var/log/energy-monitor.log 2>&1
+ExecStart=/home/klotz/wip/energy-monitor/energy-monitor.sh >> /var/log/energy-monitor.log 2>&1
 Restart=always
 RestartSec=5
 
