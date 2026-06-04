@@ -6,11 +6,11 @@ echo timestamp,plug,power_w,voltage_v,current_a,energy_kwh
 
 while true; do
   ts=$(date -Is)
-  # Updated endpoints to use Entity Names instead of Object IDs
-  p=$(curl -s "$PLUG/sensor/Power" | jq -r .value)
-  v=$(curl -s "$PLUG/sensor/Voltage" | jq -r .value)
-  c=$(curl -s "$PLUG/sensor/Current" | jq -r .value)
-  e=$(curl -s "$PLUG/sensor/Total%20Daily%20Energy" | jq -r .value)
+  # Added --max-time 5 to prevent hanging and handled empty responses with // "0"
+  p=$(curl -s --max-time 5 "$PLUG/sensor/Power" | jq -r '.value // 0')
+  v=$(curl -s --max-time 5 "$PLUG/sensor/Voltage" | jq -r '.value // 0')
+  c=$(curl -s --max-time 5 "$PLUG/sensor/Current" | jq -r '.value // 0')
+  e=$(curl -s --max-time 5 "$PLUG/sensor/Total%20Daily%20Energy" | jq -r '.value // 0')
   
   printf '%s,%s,%s,%s,%s,%s\n' "$ts" "$PLUG" "$p" "$v" "$c" "$e"
   sleep 10
