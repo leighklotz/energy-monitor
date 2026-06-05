@@ -22,7 +22,6 @@ Ensure the following tools are installed on your system:
 3. **Run the Install Script**:
    Make sure you have appropriate permissions (sudo) for systemd operations.
    ```bash
-   chmod +x energy-monitor-install.sh
    ./energy-monitor-install.sh
    ```
 
@@ -41,15 +40,13 @@ tail -f /var/log/energy-monitor.log
 ### 2. Plotting Data
 To see a terminal-based line graph of the power consumption over time, run:
 ```bash
-chmod +x energy-monitor-plot.sh
 ./energy-monitor-plot.sh /var/log/energy-monitor.log
 ```
 
 ### 3. Analyzing Averages
 To calculate average wattage for specific windows (All Time, Last Hour, Last 10 Minutes), run:
 ```bash
-chmod +x energy-monitor-power-avg.sh
-./energy-monitor-power-avg.sh /var/log/energy-monitor.log
+./power-avg.sh /var/log/energy-monitor.log
 ```
 
 ## File Descriptions
