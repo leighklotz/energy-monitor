@@ -1,11 +1,10 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <log_file>"
-    exit 1
-fi
+# Default log file path
+DEFAULT_LOG="/var/log/energy-monitor.log"
 
-FILE=$1
+# Use provided argument or default to the standard log location
+FILE="${1:-$DEFAULT_LOG}"
 
 # Check if file exists
 if [ ! -f "$FILE" ]; then
@@ -14,7 +13,6 @@ if [ ! -f "$FILE" ]; then
 fi
 
 # Extract data, remove header, and format for gnuplot (Time vs Power)
-# We use tail to skip the header, awk to get columns 1 and 3.
 DATA=$(tail -n +2 "$FILE" | awk -F, '{print $1 " " $3}' | sed 's/-[0-9]\{2\}:[0-9]\{2\}//')
 
 # Create a temporary file for plotting
@@ -22,7 +20,6 @@ TMP_DATA=$(mktemp)
 echo "$DATA" > "$TMP_DATA"
 
 # Execute gnuplot correctly. 
-# Removed "set datafile output" and fixed the plot command to use the temp file directly.
 gnuplot -e "set xdata time; \
             set timefmt '%Y-%m-%dT%H:%M:%S'; \
             set title 'Power over Time ($FILE)'; \
