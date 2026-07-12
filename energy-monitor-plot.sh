@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default log file path
-DEFAULT_LOG="/var/log/energy-monitor.log"
+DEFAULT_LOG="/var/log/energy-monitor/energy-monitor.log"
 
 # Use provided argument or default to the standard log location
 FILE="${1:-$DEFAULT_LOG}"

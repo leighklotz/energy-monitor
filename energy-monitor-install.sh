@@ -10,4 +10,4 @@ sudo systemctl enable energy-monitor.service
 sudo systemctl start energy-monitor.service
 sudo systemctl status energy-monitor.service
 
-tail /var/log/energy-monitor.log
+tail /var/log/energy-monitor/energy-monitor.log
