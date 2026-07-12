@@ -19,7 +19,7 @@ Ensure the following tools are installed on your system:
 1. **Clone the repository** (or place these files in your desired directory).
 2. **Configure the Service**: 
    Open `energy-monitor.service` and ensure the `ExecStart` path matches the actual absolute path of your `energy-monitor.sh` script on your machine.
-3. **Run the Install Script**:
+3. **Run the Install Script**: 
    This will configure the systemd service, reload the daemon, and start monitoring. This requires `sudo` privileges.
    ```bash
    chmod +x *.sh
@@ -55,32 +55,18 @@ $ ./watch-plot.sh
          |       +        + *     +       +       +     *  +       * *   * |
      400 |-+                *                           *Power *W) *******-|
          |                  **                          *      *   * *   * |
-     350 |-+                **                          **     *   * *   *-|
-         |                  **                          **     **  * *   * |
-     300 |-+                **                          **     ** *   *  **|
-         |                  * *                        * *     ** *   *  **|
-     250 |-+                * *                        * *     ** *   *  **|
-Watts    |                 *  *                        *  *    * **   * * *|
-         |                 *   *                       *  *   *  **   * * *|
-     200 |-+               *   *                       *  **  *  *    * *+*|
-         |          ***    *   *                       *   *  *       * *  |
-     150 |-+        * *    *    *                      *    * *        **+-|
-         |          *  *   *    *            *         *    * *        **  |
-     100 |-+   *   *   *   *     *           **       *      **         *+-|
-         |      ****   *****     ************  ********    + **    +    *  |
+     350 |-+                **                          **     *   * * **-|
+              \            / \                        /    \   *  * * / 
+               \          /   \                      /      \ * /  * /  
+                \________/     \____________________/        \__/__/   
       50 +-----------------------------------------------------------------+
        04:00   05:00    06:00   07:00   08:00   09:00    10:00   11:00   12:00
-                                        Time
-```
 
 ### 4. Analyzing Averages
-Use the wrapper script to generate statistical reports for specific log files:
+Run the Python analysis engine to generate statistical reports for a specific log file:
 ```bash
-# Uses default /var/log/energy-monitor.log
-./run.sh [/path/to/your/logfile]
-
-# Or run the Python engine directly
-python3 power-avg.py /path/to/your/logfile
+# Uses default /var/log/energy-monitor/energy-monitor.log if no argument is provided
+python3 power-avg.py [/path/to/your/logfile]
 ```
 
 ## File Descriptions
@@ -90,4 +76,3 @@ python3 power-avg.py /path/to/your/logfile
 - `energy-monitor-plot.sh`: Bash script using `gnuplot` to render ASCII line charts.
 - `watch-plot.sh`: A wrapper that uses `watch` to refresh the plot automatically.
 - `power-avg.py`: Python engine for calculating statistical averages across various time windows.
-- `run.sh`: A convenience wrapper to execute analysis on a log file.
