@@ -17,13 +17,11 @@ def analyze_energy(file_path):
                 if not row or len(row) < 3:
                     continue
                 try:
-                    # Index 0 is timestamp, index 2 is power_w based on provided log format
                     ts_raw = row[0].replace('Z', '+00:00')
                     power_val = float(row[2])
                 except (ValueError, TypeError, IndexError):
                     continue
 
-                # Timestamp parsing logic
                 try:
                     ts = datetime.fromisoformat(ts_raw)
                 except ValueError:
@@ -54,12 +52,10 @@ def analyze_energy(file_path):
         print("No valid data available.")
         return
 
-    # Ensure chronological order for time-range logic
     data.sort(key=lambda x: x['timestamp'])
     last_time = data[-1]['timestamp']
     first_ts = data[0]['timestamp']
     
-    # Define the metrics to calculate and their relative starting timestamps
     metrics = [
         ("Average Power (Last 10 Min)", last_time - timedelta(minutes=10)),
         ("Average Power (Last Hour)",   last_time - timedelta(hours=1)),
@@ -72,26 +68,44 @@ def analyze_energy(file_path):
     def safe_mean(lst):
         return mean(lst) if lst else 0.0
 
-    print(f"--- {file_path} ---")
-    # Always show All Time as the primary baseline
+    print(f"\n--- {file_path} ---")
     avg_all = safe_mean([d['power_w'] for d in data])
-    print(f"Average Power (All Time):   {avg_all:.2f} W")
+    print(f"Global Baseline:          {avg_all:.2f} W\n")
+
+    # Collect results to calculate max for scaling the bar chart
+    plot_results = []
 
     for label, threshold in metrics:
-        # ELIDE LOGIC: 
-        # If the timeframe's start is older than or equal to our earliest recorded log entry,
-        # that period contains no unique data relative to "All Time" (it would just be a duplicate).
         if threshold <= first_ts:
             continue
 
         period_power = [d['power_w'] for d in data if d['timestamp'] >= threshold]
-        
-        if period_power:
-            avg_val = safe_mean(period_power)
-            print(f"{label:<28} {avg_val:.2f} W")
+        avg_val = safe_mean(period_power)
+        plot_results.append((label, avg_val))
+
+    if not plot_results:
+        print("No period-specific metrics available.")
+        return
+
+    # --- ASCII BAR PLOT LOGIC ---
+    max_val = max([r[1] for r in plot_results] + [avg_all]) # Scale against highest value
+    bar_width = 60  # Character width of the bar itself (to make it wide)
+    
+    print(f"{'Metric':<28} | {'Visual Trend (Scaled)':<{bar_width}} | Value")
+    print("-" * (31 + bar_width + 15))
+
+    for label, val in plot_results:
+        # Calculate scaling factor for the bar width
+        if max_val > 0:
+            scaled_len = int((val / max_val) * bar_width)
+        else:
+            scaled_len = 0
+            
+        bar = "█" * scaled_len
+        print(f"{label:<28} | {bar:<{bar_width}} | {val:>7.2f} W")
 
     print() # Spacer
-    print(f"Data Range: {data[0]['timestamp']} to {data[-1]['timestamp']}")
+    print(f"Data Range:  {data[0]['timestamp']} to {data[-1]['timestamp']}")
     print(f"Total Records: {len(data)}")
 
 if __name__ == "__main__":
@@ -99,3 +113,4 @@ if __name__ == "__main__":
 
    for arg in files_to_process:
        analyze_energy(arg)
+
