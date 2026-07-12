@@ -4,19 +4,26 @@ import sys
 from datetime import datetime, timedelta
 from statistics import mean
 
+# Default file path if no arguments are provided
+DEFAULT_FILE = "/var/log/energy-monitor/energy-monitor.log"
+
 def analyze_energy(file_path):
     data = []
     
     try:
         with open(file_path, mode='r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
+            # Use csv.reader instead of DictReader because headers are no longer present
+            reader = csv.reader(f)
             for row in reader:
+                if not row or len(row) < 3:
+                    continue
                 try:
-                    power_val = float(row['power_w'])
-                except (ValueError, TypeError):
+                    # Index 0 is timestamp, index 2 is power_w based on provided log format
+                    ts_raw = row[0].replace('Z', '+00:00')
+                    power_val = float(row[2])
+                except (ValueError, TypeError, IndexError):
                     continue
 
-                ts_raw = row['timestamp'].replace('Z', '+00:00')
                 try:
                     ts = datetime.fromisoformat(ts_raw)
                 except ValueError:
@@ -27,8 +34,8 @@ def analyze_energy(file_path):
                         ts = datetime.fromisoformat(ts_str)
                     except ValueError:
                         try:
-                            ts = datetime.strptime(row['timestamp'], '%Y-%m-%d %H:%M:%S')
-                        except ValueError:
+                            ts = datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
+                        except (ValueError, IndexError):
                             continue
 
                 data.append({
@@ -55,16 +62,9 @@ def analyze_energy(file_path):
     one_day_ago = last_time - timedelta(days=1)
     one_week_ago = last_time - timedelta(weeks=1)
     
-    # Calculate start of current month/year for YTD
-    # Note: This assumes "YTD" means since Jan 1st of the current year, 
-    # or since the start of the current month depending on interpretation. 
-    # Standard YTD usually means Jan 1. If "Month to Date" is also requested, 
-    # we calculate MTD from the 1st of the current month.
-    
     start_of_current_month = last_time.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     start_of_current_year = last_time.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # Filter data based on time windows
     all_power = [d['power_w'] for d in data]
     hour_power = [d['power_w'] for d in data if d['timestamp'] >= one_hour_ago]
     ten_min_power = [d['power_w'] for d in data if d['timestamp'] >= ten_mins_ago]
@@ -97,11 +97,8 @@ def analyze_energy(file_path):
     print(f"Total Records: {len(data)}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python3 power-avg.py <file1> [file2 ...]")
-        sys.exit(1)
+   files_to_process = sys.argv[1:] if len(sys.argv) > 1 else [DEFAULT_FILE]
 
-    for arg in sys.argv[1:]:
-        analyze_energy(arg)
-
+   for arg in files_to_process:
+       analyze_energy(arg)
 
