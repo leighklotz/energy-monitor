@@ -29,4 +29,3 @@ gnuplot -e "set xdata time; \
             plot '$TMP_DATA' using 1:2 with lines title 'Power (W)'"
 
 rm "$TMP_DATA"
-
