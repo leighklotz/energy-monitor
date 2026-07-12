@@ -25,7 +25,8 @@ gnuplot -e "set xdata time; \
             set title 'Power over Time ($FILE)'; \
             set xlabel 'Time'; \
             set ylabel 'Watts'; \
-            set term dumb; \
+            set term dumb size 132,24; \
             plot '$TMP_DATA' using 1:2 with lines title 'Power (W)'"
 
 rm "$TMP_DATA"
+
