@@ -48,7 +48,29 @@ To see a terminal-based line graph of the power consumption over time:
 ### 3. Watching Data (Live Update)
 To run the plot in a loop, updating every 10 seconds:
 ```bash
-./watch-plot.sh
+$ ./watch-plot.sh
+
+            Power over Time (/var/log/energy-monitor/energy-monitor.log)
+     450 +-----------------------------------------------------------------+
+         |       +        + *     +       +       +     *  +       * *   * |
+     400 |-+                *                           *Power *W) *******-|
+         |                  **                          *      *   * *   * |
+     350 |-+                **                          **     *   * *   *-|
+         |                  **                          **     **  * *   * |
+     300 |-+                **                          **     ** *   *  **|
+         |                  * *                        * *     ** *   *  **|
+     250 |-+                * *                        * *     ** *   *  **|
+Watts    |                 *  *                        *  *    * **   * * *|
+         |                 *   *                       *  *   *  **   * * *|
+     200 |-+               *   *                       *  **  *  *    * *+*|
+         |          ***    *   *                       *   *  *       * *  |
+     150 |-+        * *    *    *                      *    * *        **+-|
+         |          *  *   *    *            *         *    * *        **  |
+     100 |-+   *   *   *   *     *           **       *      **         *+-|
+         |      ****   *****     ************  ********    + **    +    *  |
+      50 +-----------------------------------------------------------------+
+       04:00   05:00    06:00   07:00   08:00   09:00    10:00   11:00   12:00
+                                        Time
 ```
 
 ### 4. Analyzing Averages
